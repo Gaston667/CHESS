@@ -1,47 +1,38 @@
-# CHESS
-
-D'accord ! Voici une **arborescence plus simple** pour ton projet d'échecs en Java avec Swing.  
-
----
-
-## **📂 Arborescence simplifiée**
-```
-ChessGame/
-│── src/  # Dossier des fichiers sources Java
-│   ├── ChessGame.java    # Point d'entrée du jeu
-│   ├── Echiquier.java    # Gère le plateau de jeu
-│   ├── Piece.java        # Classe mère pour les pièces
-│   ├── Pion.java         # Classe du Pion
-│   ├── Tour.java         # Classe de la Tour
-│   ├── Cavalier.java     # Classe du Cavalier
-│   ├── Fou.java          # Classe du Fou
-│   ├── Reine.java        # Classe de la Reine
-│   ├── Roi.java          # Classe du Roi
-│   ├── Joueur.java       # Gère les joueurs et le tour
-│   ├── ChessGUI.java     # Interface graphique en Swing
-│── assets/  # Images des pièces
-│   ├── roi_noir.png
-│   ├── roi_blanc.png
-│   ├── ...
-│── README.md  # Explication du projet
-```
-
----
-
-## **📜 Cahier des charges **
-
-### **1. Objectif**
-Créer un **jeu d'échecs en Java avec Swing**, jouable entre **deux joueurs sur le même PC**.
-
-### **2. Fonctionnalités**
-✅ Plateau 8x8 avec affichage des pièces  
-✅ Déplacement des pièces selon les règles  
-✅ Tour par tour (Blancs commencent)  
-✅ Vérification de l’échec et de l’échec et mat  
-✅ Interface simple avec Swing  
-
-### **3. Bonus (si possible)**
-➕ Mode contre une IA  
-➕ Animation des déplacements  
-
----
+src/
+├── modele/               ← 🔵 Couche Modèle (logique du jeu)
+│   ├── Partie.java
+│   ├── Plateau.java
+│   ├── Case.java
+│   ├── Coup.java
+│   ├── Couleur.java              ← enum
+│   ├── ModeDeJeu.java            ← enum
+│   ├── piece/
+│   │   ├── Piece.java            ← abstraite
+│   │   ├── Roi.java
+│   │   ├── Reine.java
+│   │   ├── Tour.java
+│   │   ├── Cavalier.java
+│   │   ├── Fou.java
+│   │   └── Pion.java
+│   ├── joueur/
+│   │   ├── Joueur.java           ← abstraite
+│   │   ├── JoueurHumain.java
+│   │   ├── JoueurIA.java
+│   │   └── IA.java
+│
+├── vue/                  ← 🟢 Couche Vue (console ou graphique)
+│   ├── Vue.java                  ← interface
+│   ├── VueConsole.java
+│   ├── VueGraphique.java
+│
+├── controleur/           ← 🟠 Couche Contrôleur
+│   ├── ControleurPartie.java
+│   └── ControleurReseau.java
+│
+├── reseau/               ← 🌐 Réseau (mode en ligne)
+│   ├── MessageJeu.java
+│   ├── TypeMessage.java         ← enum
+│   ├── Serveur.java
+│   └── Client.java
+│
+└── Main.java             ← Point d'entrée du jeu
