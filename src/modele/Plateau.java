@@ -4,8 +4,10 @@ import modele.piece.*;
 
 public class Plateau {
     Case[][] cases;
+    String style;
 
-    public Plateau(){
+    public Plateau(String style){
+        this.style = style;
         // Création du plateau de jeu avec 64 cases
         cases = new Case[8][8];
         for (int i = 0; i < 8; i++) {
@@ -121,5 +123,9 @@ public class Plateau {
         caseOrigine.setPiece(null);
 
       
+    }
+
+    public String getStyle() {
+        return style;
     }
 }

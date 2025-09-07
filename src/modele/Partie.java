@@ -1,11 +1,10 @@
 package modele;
 
-import modele.piece.Piece;
-import modele.joueur.*;
-
-import java.util.List;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.List;
+import modele.joueur.*;
+import modele.piece.Piece;
 
 public class Partie{
     private Plateau plateau;
@@ -20,8 +19,8 @@ public class Partie{
     private List<Piece> listeCapturesBlancs;
     private List<Piece> listeCapturesNoires;
 
-    public Partie(Joueur joueurBlanc, Joueur joueurNoir) {
-        plateau = new Plateau();
+    public Partie(Joueur joueurBlanc, Joueur joueurNoir, String stylePlateau) {
+        plateau = new Plateau(stylePlateau);
         nombreCoups = 0;
         historique = new ArrayList<>();
         listeCapturesBlancs = new ArrayList<>();
@@ -117,6 +116,12 @@ public class Partie{
 
     public List<Coup> getHistorique() {
         return historique;
+    }
+    public Coup getDernierCoup() {
+        if(this.historique.isEmpty()) {
+            return null;
+        }
+        return this.historique.get(this.historique.size() - 1);
     }
 
     public int getNombreCoups() {

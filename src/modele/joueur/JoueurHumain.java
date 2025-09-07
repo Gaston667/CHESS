@@ -24,5 +24,9 @@ public class JoueurHumain extends Joueur {
     public Coup jouerCoup(Plateau plateau) {
         return vue.demanderCoup(plateau); // la vue s'adapte si c'est réseau ou pas
     }
+
+    public void setVue(Vue vue) {
+        this.vue = vue;
+    }
 }
 

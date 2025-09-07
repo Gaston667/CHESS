@@ -1,10 +1,9 @@
 package controleur;
 
-import modele.joueur.*;
 import modele.Coup;
-import modele.Partie;
-import modele.Plateau;
 import modele.ModeDeJeu;
+import modele.Partie;
+import modele.joueur.*;
 import vue.Vue;
 
 
@@ -26,6 +25,8 @@ public class ControleurPartie {
         System.out.println("BIENVENUE AU JEU D'ÉCHECS");
         System.out.println("===============================\n");
 
+        System.out.println("DEbug");
+
 
         vue.afficherMessage("Mode de jeu : " + modeDeJeu);
         vue.afficherMessage("Joueurs : " + partie.getJoueurBlanc().getNom() + " (Blancs) vs " + partie.getJoueurNoir().getNom() + " (Noirs)");
@@ -44,10 +45,14 @@ public class ControleurPartie {
             try {
                 Joueur joueurPrecedent = partie.getJoueurActif(); // AVANT le tour
                 partie.jouerTour(); // Moteur de jeu
-                Coup dernierCoup = partie.getHistorique().get(partie.getHistorique().size() - 1);
+                Coup dernierCoup = partie.getDernierCoup(); 
+                vue.setDernierCoup(dernierCoup);
                 vue.afficherPlateau(partie.getPlateau());
-                //System.out.println("");
-                vue.afficherMessage("Dernier coup : " + joueurPrecedent.getNom() + " a joué " + dernierCoup);
+
+                if(dernierCoup != null) {
+                    vue.afficherMessage("Dernier coup : " + joueurPrecedent.getNom() + " a joué " + dernierCoup);
+                }
+
                 vue.afficherMessage("\nC'est au tour de " + partie.getJoueurActif().getNom() + " de jouer.");
             } catch (IllegalArgumentException e) {
                 vue.afficherMessage("> Erreur : " + e.getMessage());

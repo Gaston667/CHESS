@@ -71,5 +71,11 @@ public class VueConsole implements Vue {
         int ligne = Character.getNumericValue(position.charAt(1)); // Convertit '0' à '7'
         return new int[]{ligne, col};
     }
-    
+
+    @Override
+    public void setDernierCoup(Coup coup) {
+        // Implémentation pour mettre à jour le dernier coup joué
+        System.out.println("Dernier coup joué : " + coup);
+    }
+
 }

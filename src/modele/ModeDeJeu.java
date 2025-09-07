@@ -1,6 +1,6 @@
 package modele;
 public enum ModeDeJeu {
-    IA_VS_HUMAIN,
+    HUMAIN_VS_IA,
     HUMAIN_VS_HUMAIN,
     RESEAU_SERVEUR,
     RESEAU_CLIENT,
