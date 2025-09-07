@@ -1,6 +1,6 @@
 # CHESS
 
-Projet universitaire — implémentation d’un jeu d’échecs en Java (IUT de Fontainebleau).
+Implémentation d’un jeu d’échecs en Java (IUT de Fontainebleau).
 
 ## Dépôts
 - **Forge de l’IUT** : `https://forge-fac.example.com/mon-orga/CHESS.git`
