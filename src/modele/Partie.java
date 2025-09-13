@@ -102,6 +102,10 @@ public class Partie{
         nombreCoups++;
     }
 
+    public String getScore() {
+        return "Blancs : " + listeCapturesBlancs.size() + " - Noirs : " + listeCapturesNoires.size();
+    }
+
     public Joueur getJoueurActif() {
         return joueurActif;
     }

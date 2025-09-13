@@ -22,6 +22,7 @@ public class VueGraphiqueSwing implements Vue {
     private final JLabel lblScore = new JLabel("Score : ");
     private final JPanel panelSysteme = new JPanel();
 
+     private JScrollPane scrollMessages;
 
     public VueGraphiqueSwing(Partie partie) {
         fen = new JFrame("CHESS GAME");
@@ -54,14 +55,30 @@ public class VueGraphiqueSwing implements Vue {
         scrollSysteme.setBorder(BorderFactory.createTitledBorder("Système"));
         droite.add(scrollSysteme, BorderLayout.CENTER);
 
-        // === Colonne gauche (messages serveur) ===
+        //  Colonne gauche (messages serveur + input) 
         panelMessages.setLayout(new BoxLayout(panelMessages, BoxLayout.Y_AXIS));
         panelMessages.setPreferredSize(new Dimension(200, 0));
         panelMessages.setMinimumSize(new Dimension(200, 0));
-        JScrollPane scrollMessages = new JScrollPane(panelMessages);
+        scrollMessages = new JScrollPane(panelMessages);
         scrollMessages.setBorder(BorderFactory.createTitledBorder("Messages (serveur)"));
 
-        // === JSplitPane centre (plateau + droite) ===
+        // Champ de saisie et bouton
+        JTextField champMessage = new JTextField();
+        JButton btnEnvoyer = new JButton("Envoyer");
+        btnEnvoyer.addActionListener(new ButtonEnvoyerMessageListener(champMessage, this));
+        champMessage.addKeyListener(new ToucheEntrerEnvoyerMessageListener(champMessage, this));
+
+        // Panneau bas (saisie + bouton)
+        JPanel basGauche = new JPanel(new BorderLayout(5, 0));
+        basGauche.add(champMessage, BorderLayout.CENTER);
+        basGauche.add(btnEnvoyer, BorderLayout.EAST);
+
+        // Panneau global gauche
+        JPanel gauche = new JPanel(new BorderLayout());
+        gauche.add(scrollMessages, BorderLayout.CENTER);
+        gauche.add(basGauche, BorderLayout.SOUTH);
+
+        //  JSplitPane centre (plateau + droite) 
         JSplitPane splitCentre = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
             plateauUI,
@@ -71,10 +88,10 @@ public class VueGraphiqueSwing implements Vue {
         splitCentre.setResizeWeight(0.7);
         splitCentre.setOneTouchExpandable(true);
 
-        // === JSplitPane global (gauche + centre) ===
+        //  JSplitPane global (gauche + centre) 
         JSplitPane splitGlobal = new JSplitPane(
             JSplitPane.HORIZONTAL_SPLIT,
-            scrollMessages, 
+            gauche,
             splitCentre
         );
         splitGlobal.setDividerLocation(200);
@@ -89,48 +106,86 @@ public class VueGraphiqueSwing implements Vue {
         fen.setVisible(true);
     }
 
-    private JPanel createMessageBlock(String text, Color bg, Color fg) {
-        JLabel lbl = new JLabel(text);
-        lbl.setForeground(fg);
+    private JPanel createMessageBlock(String auteur, String text) {
+        JLabel lbl = new JLabel(auteur + " : " + text);
 
         JPanel block = new JPanel(new BorderLayout());
         block.add(lbl, BorderLayout.CENTER);
 
-        // Style
+        // Couleur selon auteur
+        Color bg, fg, border;
+        switch (auteur.toLowerCase()) {
+            case "moi" -> {
+                bg = new Color(200, 255, 200); // vert clair
+                fg = Color.BLACK;
+                border = Color.GREEN.darker();
+            }
+            case "serveurbleu" -> {
+                bg = new Color(220, 235, 255); // bleu clair
+                fg = Color.BLUE.darker();
+                border = Color.BLUE;
+            }
+            case "serveurrouge" -> {
+                bg = new Color(255, 220, 220); // rouge clair
+                fg = Color.RED.darker();
+                border = Color.RED;
+            }
+            default -> { // adversaire
+                bg = new Color(255, 220, 220); // rouge clair
+                fg = Color.RED.darker();
+                border = Color.RED;
+            }
+        }
+
         block.setBackground(bg);
+        lbl.setForeground(fg);
         block.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(5, 10, 5, 10), // marges internes
-            BorderFactory.createLineBorder(Color.GRAY, 1)   // bordure
+            BorderFactory.createLineBorder(border, 1),
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
 
-        // Taille fixe : largeur dynamique, hauteur compacte
-        block.setPreferredSize(new Dimension(0, 35)); // hauteur 35 px
-        block.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35)); // largeur étirable, hauteur fixée
+        // Taille compacte
+        block.setPreferredSize(new Dimension(0, 35));
+        block.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
         block.setMinimumSize(new Dimension(100, 35));
 
         return block;
     }
 
 
+
     // Ajouter message serveur (colonne gauche)
-    public void ajouterMessageChat(String message) {
-        SwingUtilities.invokeLater(() -> { // assure que c'est dans le thread Swing
-            JPanel block = createMessageBlock(message, Color.WHITE, Color.BLACK);
+    public void ajouterMessageChat(String auteur, String message) {
+        SwingUtilities.invokeLater(() -> {
+            JPanel block = createMessageBlock(auteur, message);
             panelMessages.add(block);
-            panelSysteme.add(Box.createVerticalStrut(8));
+            panelMessages.add(Box.createVerticalStrut(15));
             panelMessages.revalidate();
             panelMessages.repaint();
+
+            // Déplacer la scrollbar après que Swing ait fini la mise en page
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar verticalBar = scrollMessages.getVerticalScrollBar();
+                verticalBar.setValue(verticalBar.getMaximum());
+            });
         });
     }
 
+
     // Ajouter message système (colonne droite bas)
-    public void ajouterMessageSysteme(String message) {
+    public void ajouterMessageSysteme(String auteur, String message) {
         SwingUtilities.invokeLater(() -> {
-            JPanel block = createMessageBlock(message, new Color(255,220,220), Color.RED);
+            JPanel block = createMessageBlock(auteur, message);
             panelSysteme.add(block);
             panelSysteme.add(Box.createVerticalStrut(15));
             panelSysteme.revalidate();
             panelSysteme.repaint();
+        });
+
+         // Déplacer la scrollbar après que Swing ait fini la mise en page
+        SwingUtilities.invokeLater(() -> {
+            JScrollBar verticalBar = scrollMessages.getVerticalScrollBar();
+            verticalBar.setValue(verticalBar.getMaximum());
         });
     }
 
@@ -138,8 +193,9 @@ public class VueGraphiqueSwing implements Vue {
     @Override
     public void afficherMessage(TypeMessage type, String message) {
         switch (type) {
-        case CHAT : ajouterMessageChat(message);
-        case SYSTEME : ajouterMessageSysteme(message);
+        case CHAT : ajouterMessageChat("", message); break;
+        case SYSTEMEBLEU : ajouterMessageSysteme("serveurBleu", message); break;
+        case SYSTEMEROUGE : ajouterMessageSysteme("serveurRouge", message); break;
         default : System.out.println("[INFO] " + message);
         }
     }

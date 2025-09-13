@@ -27,15 +27,17 @@ public class ControleurPartie {
         System.out.println("===============================\n");
 
 
-        vue.afficherMessage(TypeMessage.SYSTEME,"Mode de jeu : " + modeDeJeu);
-        vue.afficherMessage(TypeMessage.SYSTEME,"Joueurs : " + partie.getJoueurBlanc().getNom() + " (Blancs) vs " + partie.getJoueurNoir().getNom() + " (Noirs)");
-        vue.afficherMessage(TypeMessage.SYSTEME,"Les pions Noirs sont en bas. Les pions Blancs sont en haut. \n");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Mode de jeu : " + modeDeJeu);
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Joueurs : " + partie.getJoueurBlanc().getNom() + " (Blancs) vs " + partie.getJoueurNoir().getNom() + " (Noirs)");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Les pions Noirs sont en bas. Les pions Blancs sont en haut. \n");
 
-        vue.afficherMessage(TypeMessage.SYSTEME,"------- La Partie commence ! -------");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"------- La Partie commence ! -------");
         vue.afficherPlateau(partie.getPlateau());
         //System.out.print("\n");
-        vue.afficherMessage(TypeMessage.SYSTEME,"C'est au tour de " + partie.getJoueurActif().getNom() + " de jouer.");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"C'est au tour de " + partie.getJoueurActif().getNom() + " de jouer.");
         boucleDeJeu();
+        vue.setTour(partie.getJoueurActif().getNom());
+        vue.setScore(partie.getScore());
     }
 
     public void boucleDeJeu(){
@@ -49,20 +51,21 @@ public class ControleurPartie {
                 vue.afficherPlateau(partie.getPlateau());
 
                 if(dernierCoup != null) {
-                    vue.afficherMessage(TypeMessage.SYSTEME,"Dernier coup : " + joueurPrecedent.getNom() + " a joué " + dernierCoup);
+                    vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Dernier coup : " + joueurPrecedent.getNom() + " a joué " + dernierCoup);
                 }
 
-                vue.afficherMessage(TypeMessage.SYSTEME,"\nC'est au tour de " + partie.getJoueurActif().getNom() + " de jouer.");
+                vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"\nC'est au tour de " + partie.getJoueurActif().getNom() + " de jouer.");
                 vue.setTour(partie.getJoueurActif().getNom());
+                vue.setScore(partie.getScore());
             } catch (IllegalArgumentException e) {
-                vue.afficherMessage(TypeMessage.SYSTEME,"> Erreur : " + e.getMessage());
+                vue.afficherMessage(TypeMessage.SYSTEMEROUGE,"> Erreur : " + e.getMessage());
             }
         }
 
-        vue.afficherMessage(TypeMessage.SYSTEME,"La partie est terminée !");
-        vue.afficherMessage(TypeMessage.SYSTEME,"Si vous souhaitez rejouer, relancez le programme.");
-        vue.afficherMessage(TypeMessage.SYSTEME,"Si vous souhaitez voir l'historique des coups taper 1. Si vous souhaitez voir les captures taper 2.");
-        vue.afficherMessage(TypeMessage.SYSTEME,"Merci d'avoir joué !");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"La partie est terminée !");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Si vous souhaitez rejouer, relancez le programme.");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Si vous souhaitez voir l'historique des coups taper 1. Si vous souhaitez voir les captures taper 2.");
+        vue.afficherMessage(TypeMessage.SYSTEMEBLEU,"Merci d'avoir joué !");
     }
 
 }
