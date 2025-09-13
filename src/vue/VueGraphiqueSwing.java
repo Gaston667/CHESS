@@ -2,114 +2,160 @@ package vue;
 
 import java.awt.*;
 import javax.swing.*;
+import jdk.jfr.Percentage;
 import modele.Coup;
 import modele.Partie;
 import modele.Plateau;
-
+import reseau.TypeMessage;
 
 public class VueGraphiqueSwing implements Vue {
     private Coup c;
-    JFrame fen = new JFrame("CHESS GAME");
+    private final JFrame fen;
     private final PlateauSwingUI plateauUI;
-    //private Coup dernierCoup;
 
-    // Journal systeme
-    private final JTextArea zoneSystem = new JTextArea(10, 24);
-    private final JScrollPane scrollSystem = new JScrollPane(zoneSystem);
+    // Colonne gauche (messages dynamiques)
+    private final JPanel panelMessages = new JPanel();
 
-    // zone de message for chat
-    private final JTextArea zoneChat = new JTextArea(10, 24);
-    private final JScrollPane scrollChat = new JScrollPane(zoneChat);
-    private final JTextField champChat = new JTextField();
-    private final JButton btnEnvoyer = new JButton("Envoyer");
+    // Colonne droite (infos dynamiques)
+    private final JLabel lblDernierCoup = new JLabel("Dernier coup : ");
+    private final JLabel lblTour = new JLabel("Tour : ");
+    private final JLabel lblScore = new JLabel("Score : ");
+    private final JPanel panelSysteme = new JPanel();
+
 
     public VueGraphiqueSwing(Partie partie) {
+        fen = new JFrame("CHESS GAME");
         fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        fen.setResizable(false);
+        fen.setResizable(true);
         fen.setLayout(new BorderLayout());
 
-        //Centre : Gestion du plateau
-        plateauUI = new PlateauSwingUI(partie.getPlateau(), partie, this); // Passe le modèle
-        fen.add(plateauUI, BorderLayout.CENTER);
-        
+        //  Plateau 
+        plateauUI = new PlateauSwingUI(partie.getPlateau(), partie, this);
+        plateauUI.setPreferredSize(new Dimension(500, 600));
 
-        // Journal systeme (droite, haut)
-        zoneSystem.setEditable(false);
-        zoneSystem.setLineWrap(true);
-        zoneSystem.setWrapStyleWord(true);
-        zoneSystem.setBorder(BorderFactory.createTitledBorder("System"));
+        //  Colonne droite (infos + messages système) 
+        JPanel droite = new JPanel(new BorderLayout());
 
-        // chat
-        zoneChat.setEditable(false);
-        zoneChat.setLineWrap(true);
-        zoneChat.setWrapStyleWord(true);
-        zoneChat.setBorder(BorderFactory.createTitledBorder("Chat"));
+        // Haut -> infos
+        JPanel panelInfos = new JPanel();
+        panelInfos.setLayout(new BoxLayout(panelInfos, BoxLayout.Y_AXIS));
+        panelInfos.setBorder(BorderFactory.createTitledBorder("Infos"));
+        panelInfos.add(lblDernierCoup);
+        panelInfos.add(Box.createVerticalStrut(10));
+        panelInfos.add(lblTour);
+        panelInfos.add(Box.createVerticalStrut(10));
+        panelInfos.add(lblScore);
 
-        JPanel chatBas = new JPanel(new BorderLayout(6,0));
-        chatBas.add(champChat, BorderLayout.CENTER);
-        chatBas.add(btnEnvoyer, BorderLayout.EAST);
+        droite.add(panelInfos, BorderLayout.NORTH);
 
-        JPanel chatPanel = new JPanel(new BorderLayout(0, 4));
-        chatPanel.add(scrollChat, BorderLayout.CENTER);
-        chatPanel.add(chatBas, BorderLayout.SOUTH);
+        // Bas -> messages système
+        panelSysteme.setLayout(new BoxLayout(panelSysteme, BoxLayout.Y_AXIS));
+        JScrollPane scrollSysteme = new JScrollPane(panelSysteme);
+        scrollSysteme.setBorder(BorderFactory.createTitledBorder("Système"));
+        droite.add(scrollSysteme, BorderLayout.CENTER);
 
-        // Colonne droite : systeme (en haut) et  chat (en bas)
-        JPanel coloneDroite = new JPanel( new BorderLayout(0, 8));
-        coloneDroite.add(scrollSystem, BorderLayout.CENTER);
-        coloneDroite.add(chatPanel, BorderLayout.SOUTH);
+        // === Colonne gauche (messages serveur) ===
+        panelMessages.setLayout(new BoxLayout(panelMessages, BoxLayout.Y_AXIS));
+        panelMessages.setPreferredSize(new Dimension(200, 0));
+        panelMessages.setMinimumSize(new Dimension(200, 0));
+        JScrollPane scrollMessages = new JScrollPane(panelMessages);
+        scrollMessages.setBorder(BorderFactory.createTitledBorder("Messages (serveur)"));
 
-        fen.add(coloneDroite, BorderLayout.EAST);
+        // === JSplitPane centre (plateau + droite) ===
+        JSplitPane splitCentre = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            plateauUI,
+            droite
+        );
+        splitCentre.setDividerLocation(800);
+        splitCentre.setResizeWeight(0.7);
+        splitCentre.setOneTouchExpandable(true);
 
-        // Ecouteur pour envoyer le chat
-        btnEnvoyer.addActionListener(e -> envoyerChat());
-        champChat.addActionListener(e -> envoyerChat());
+        // === JSplitPane global (gauche + centre) ===
+        JSplitPane splitGlobal = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            scrollMessages, 
+            splitCentre
+        );
+        splitGlobal.setDividerLocation(200);
+        splitGlobal.setResizeWeight(0.0); // tout l'espace supplémentaire va à droite
+        splitGlobal.setOneTouchExpandable(true);
 
-        fen.setSize(1000, 800); 
-        //fen.pack(); // ajuste la taille selon le contenu
-        fen.setLocationRelativeTo(null); // centre la fenêtre à l'écran
+        // Ajout final
+        fen.add(splitGlobal, BorderLayout.CENTER);
+
+        fen.setSize(1400, 800);
+        fen.setLocationRelativeTo(null);
         fen.setVisible(true);
     }
 
-    public void envoyerChat() {
-        String message = champChat.getText().trim();
-        if (!message.isEmpty()) {
-            zoneChat.append("Vous: " + message + "\n");
-            champChat.setText("");
-        }
+    private JPanel createMessageBlock(String text, Color bg, Color fg) {
+        JLabel lbl = new JLabel(text);
+        lbl.setForeground(fg);
+
+        JPanel block = new JPanel(new BorderLayout());
+        block.add(lbl, BorderLayout.CENTER);
+
+        // Style
+        block.setBackground(bg);
+        block.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(5, 10, 5, 10), // marges internes
+            BorderFactory.createLineBorder(Color.GRAY, 1)   // bordure
+        ));
+
+        // Taille fixe : largeur dynamique, hauteur compacte
+        block.setPreferredSize(new Dimension(0, 35)); // hauteur 35 px
+        block.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35)); // largeur étirable, hauteur fixée
+        block.setMinimumSize(new Dimension(100, 35));
+
+        return block;
+    }
+
+
+    // Ajouter message serveur (colonne gauche)
+    public void ajouterMessageChat(String message) {
+        SwingUtilities.invokeLater(() -> { // assure que c'est dans le thread Swing
+            JPanel block = createMessageBlock(message, Color.WHITE, Color.BLACK);
+            panelMessages.add(block);
+            panelSysteme.add(Box.createVerticalStrut(8));
+            panelMessages.revalidate();
+            panelMessages.repaint();
+        });
+    }
+
+    // Ajouter message système (colonne droite bas)
+    public void ajouterMessageSysteme(String message) {
+        SwingUtilities.invokeLater(() -> {
+            JPanel block = createMessageBlock(message, new Color(255,220,220), Color.RED);
+            panelSysteme.add(block);
+            panelSysteme.add(Box.createVerticalStrut(15));
+            panelSysteme.revalidate();
+            panelSysteme.repaint();
+        });
     }
 
     // API de la Vue
-    public void afficherMessageSysteme(String msg) {
-        SwingUtilities.invokeLater(() -> {
-            zoneSystem.append(msg + "\n");
-            zoneSystem.setCaretPosition(zoneSystem.getDocument().getLength());
-        });
-    }
-
-    public void afficherMessageChat(String auteur, String msg) {
-        SwingUtilities.invokeLater(() -> {
-            zoneChat.append("[" + auteur + "]: " + msg + "\n");
-            zoneChat.setCaretPosition(zoneChat.getDocument().getLength());
-        });
-    }
-
     @Override
-    public void afficherMessage(String message) {
-        // Affichage du message dans la fenêtre graphique
+    public void afficherMessage(TypeMessage type, String message) {
+        switch (type) {
+        case CHAT : ajouterMessageChat(message);
+        case SYSTEME : ajouterMessageSysteme(message);
+        default : System.out.println("[INFO] " + message);
+        }
     }
 
     @Override
     public Coup demanderCoup(Plateau plateau) {
         while(this.c == null) {
             try {
-                Thread.sleep(20); // Attendre un court instant avant de vérifier à nouveau
+                Thread.sleep(20);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return null;
             }
         }
         Coup r = c;
-        c = null; // pret pour le coup suivant
+        c = null; // prêt pour le coup suivant
         return r;
     }
 
@@ -125,7 +171,17 @@ public class VueGraphiqueSwing implements Vue {
 
     @Override
     public void setDernierCoup(Coup coup) {
-        //this.dernierCoup = coup;
+        lblDernierCoup.setText("Dernier coup : " + coup);
         plateauUI.applyLastMove(coup);
+    }
+
+    @Override
+    public void setTour(String tour) {
+        lblTour.setText("Tour : " + tour);
+    }
+
+    @Override
+    public void setScore(String score) {
+        lblScore.setText("Score : " + score);
     }
 }

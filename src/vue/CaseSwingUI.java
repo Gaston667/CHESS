@@ -209,21 +209,21 @@ public class CaseSwingUI extends JPanel implements MouseListener{
         // Conversion du symbole en caractère Unicode
         if (piece == null) return "";
         String symbole = piece.getSymbole();
-        return switch (symbole) {
-            case "BP" -> "♟";
-            case "BC" -> "♞";
-            case "BF" -> "♝";
-            case "BT" -> "♜";
-            case "BR" -> "♛";
-            case "BO" -> "♚";
-            case "NP" -> "♟";
-            case "NC" -> "♞";
-            case "NF" -> "♝";
-            case "NT" -> "♜";
-            case "NR" -> "♛";
-            case "NO" -> "♚";
-            default -> symbole;
-        };
+        switch (symbole) {
+            case "BP": return "♟";
+            case "BC": return "♞";
+            case "BF": return "♝";
+            case "BT": return "♜";
+            case "BR": return "♛";
+            case "BO": return "♚";
+            case "NP": return "♟";
+            case "NC": return "♞";
+            case "NF": return "♝";
+            case "NT": return "♜";
+            case "NR": return "♛";
+            case "NO": return "♚";
+            default: return symbole;
+        }
     }
 
 

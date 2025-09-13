@@ -5,6 +5,7 @@ import modele.Case;
 import modele.Coup;
 import modele.Plateau;
 import modele.piece.Piece;
+import reseau.TypeMessage;
 public class VueConsole implements Vue {
 
 
@@ -62,7 +63,7 @@ public class VueConsole implements Vue {
 
 
     @Override
-    public void afficherMessage(String message) {
+    public void afficherMessage(TypeMessage type, String message) {
         System.out.println(message); // Affiche le message dans la console
     }
 
@@ -76,6 +77,16 @@ public class VueConsole implements Vue {
     public void setDernierCoup(Coup coup) {
         // Implémentation pour mettre à jour le dernier coup joué
         System.out.println("Dernier coup joué : " + coup);
+    }
+
+    @Override
+    public void setTour(String tour) {
+        System.out.println("Tour : " + tour);
+    }
+
+    @Override
+    public void setScore(String score) {
+        System.out.println("Score : " + score);
     }
 
 }

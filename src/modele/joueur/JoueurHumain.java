@@ -1,13 +1,13 @@
 package modele.joueur;
 
-import vue.Vue;
 import modele.Couleur;
 import modele.Coup;
 import modele.Plateau;
+import vue.Vue;
 
 public class JoueurHumain extends Joueur {
     private Vue vue; 
-    private boolean reseau;
+    private final  boolean reseau;
 
     public JoueurHumain(Couleur couleur, Vue vue, boolean reseau, String nom) {
         super(couleur, nom);

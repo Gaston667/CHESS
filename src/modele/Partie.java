@@ -49,7 +49,7 @@ public class Partie{
             throw new IllegalArgumentException("Ce n'est pas votre pièce.");
         }
         if(!piece.estDeplacementValide(coup, plateau)) {
-            System.out.println("ICI");
+            //System.out.println("ICI");
             throw new IllegalArgumentException("Déplacement invalide.");      
         }
         // System.out.println("sortie dans partie");
