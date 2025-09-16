@@ -130,6 +130,11 @@ public class VueGraphiqueSwing implements Vue {
                 fg = Color.RED.darker();
                 border = Color.RED;
             }
+            case "serveurorange" -> {
+                bg = new Color(255, 220, 220); // orange clair
+                fg = Color.ORANGE.darker();
+                border = Color.ORANGE;
+            }
             default -> { // adversaire
                 bg = new Color(255, 220, 220); // rouge clair
                 fg = Color.RED.darker();
@@ -194,8 +199,9 @@ public class VueGraphiqueSwing implements Vue {
     public void afficherMessage(TypeMessage type, String message) {
         switch (type) {
         case CHAT : ajouterMessageChat("", message); break;
-        case SYSTEMEBLEU : ajouterMessageSysteme("serveurBleu", message); break;
-        case SYSTEMEROUGE : ajouterMessageSysteme("serveurRouge", message); break;
+        case SYSTEME_INFO : ajouterMessageSysteme("serveurBleu", message); break;
+        case SYSTEME_WARN : ajouterMessageSysteme("serveurOrange", message); break;
+        case SYSTEME_ERR : ajouterMessageSysteme("serveurRouge", message); break;
         default : System.out.println("[INFO] " + message);
         }
     }
@@ -204,7 +210,7 @@ public class VueGraphiqueSwing implements Vue {
     public Coup demanderCoup(Plateau plateau) {
         while(this.c == null) {
             try {
-                Thread.sleep(20);
+                Thread.sleep(15);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
                 return null;

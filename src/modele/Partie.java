@@ -34,13 +34,13 @@ public class Partie{
     public void jouerTour() {
         // Logique pour jouer un tour
         Coup coup = joueurActif.jouerCoup(plateau); 
+        jouerCoup(coup);
+
+    }
+
+    public void jouerCoup(Coup coup) {
+        // Logique pour jouer un coup
         Piece piece = plateau.getCase((int)coup.getOrigine().getX(), (int)coup.getOrigine().getY()).getPiece();
-
-        // System.out.println("");
-        // System.out.println("Origine du coup : " + coup.getOrigine());
-        // System.out.println("Destination du coup : " + coup.getDestination());
-        // System.out.println("Contenu de la case d'origine : " + plateau.getCase(coup.getOrigine()).getPiece().getSymbole());
-
 
         if(piece == null) {
             throw new IllegalArgumentException("Aucune pièce à la position d'origine.");
@@ -78,7 +78,6 @@ public class Partie{
         ajouterCoup(coup);
         // Changer de joueur
         changerJoueur();
-
     }
 
     public boolean estFini() {

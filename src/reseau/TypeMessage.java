@@ -1,12 +1,26 @@
 package reseau;
 
 public enum TypeMessage {
-    DEMANDE_DE_PARTIE, // Un joueur veut lancer une partie
-    MOUVEMENT,         // Transmission d'un coup
-    FIN_DE_PARTIE,     // Signal de fin
+    // Partie / connexion
+    DEMANDE_DE_PARTIE,
+    ACCEPTATION_PARTIE,
+    REFUS_PARTIE,
+    INIT_PLATEAU,
 
-    SYSTEMEBLEU,           // Message système ( info serveur, etc.)
-    SYSTEMEROUGE,         // Message système ( info serveur, etc.) en rouge
-    CHAT               // Message chat entre joueurs
+    // Jeu
+    MOUVEMENT,
+    ABANDON,
+    ANNULATION,
+    TEMPS_DEPASSER,
+
+    // Fin
+    DEFAITE,
+    VICTOIRE,
+    EGALITE,
+
+    // Communication
+    CHAT,
+    SYSTEME_INFO,
+    SYSTEME_WARN,
+    SYSTEME_ERR
 }
-    
